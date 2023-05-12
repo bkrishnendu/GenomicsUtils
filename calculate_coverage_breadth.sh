@@ -1,7 +1,7 @@
 #!/bin/bash
 
 usage() {
-  echo "Usage: $(basename $0) -r REF_GENOME_FILE -s WGS_SAMPLE [-h] [-f FORMAT]"
+  echo "Usage: $(basename $0) -r REF_GENOME_FILE -s SORTED_BAM [-h] [-f FORMAT]"
   echo ""
   echo "Options:"
   echo "  -r  Reference genome file in FASTA format"
@@ -21,7 +21,7 @@ MIN_COVERAGE_DEPTH_INCREMENT=5
 while getopts ":r:s:f:h" opt; do
   case ${opt} in
     r ) REF_GENOME_FILE=$OPTARG;;
-    s ) WGS_SAMPLE=$OPTARG;;
+    s ) SORTED_BAM=$OPTARG;;
     f ) FORMAT=$OPTARG;;
     h ) usage
         exit;;
@@ -36,7 +36,7 @@ done
 shift $((OPTIND -1))
 
 # validate required options
-if [[ -z "$REF_GENOME_FILE" || -z "$WGS_SAMPLE" ]]; then
+if [[ -z "$REF_GENOME_FILE" || -z "$SORTED_BAM" ]]; then
   echo "Error: -r and -s options are required"
   usage
   exit 1
@@ -54,7 +54,7 @@ fi
 for MIN_COVERAGE_DEPTH in $(seq $MIN_COVERAGE_DEPTH_START $MIN_COVERAGE_DEPTH_INCREMENT $MIN_COVERAGE_DEPTH_END); do
 
   # get total number of bases covered at MIN_COVERAGE_DEPTH or higher
-  BASES_COVERED=$(samtools mpileup -B -Q 0 -d 1000000 -f $REF_GENOME_FILE $WGS_SAMPLE | awk -v X=$MIN_COVERAGE_DEPTH '$4>=X' | wc -l)
+  BASES_COVERED=$(samtools mpileup $SORTED_BAM | awk -v X=$MIN_COVERAGE_DEPTH '$4>=X' | wc -l)
 
   # calculate genome coverage
   GENOME_COVERAGE=$(echo "scale=2; $BASES_COVERED / $REF_GENOME_LENGTH" | bc)
