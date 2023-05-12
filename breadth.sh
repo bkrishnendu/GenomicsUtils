@@ -2,7 +2,7 @@
 
 # set variables
 REF_GENOME_FILE=my_ref_genome.fasta
-WGS_SAMPLE=my_short_read_sample.fastq
+BAM_SAMPLE=my_short_read_sample.bam
 
 # define range of MIN_COVERAGE_DEPTH values to iterate over
 MIN_COVERAGE_DEPTH_START=5
@@ -19,7 +19,7 @@ echo -e "MIN_COVERAGE_DEPTH\tBASES_COVERED\tGENOME_COVERAGE"
 for MIN_COVERAGE_DEPTH in $(seq $MIN_COVERAGE_DEPTH_START $MIN_COVERAGE_DEPTH_INCREMENT $MIN_COVERAGE_DEPTH_END); do
 
   # get total number of bases covered at MIN_COVERAGE_DEPTH or higher
-  BASES_COVERED=$(samtools mpileup -B -Q 0 -d 1000000 -f $REF_GENOME_FILE $WGS_SAMPLE | awk -v X=$MIN_COVERAGE_DEPTH '$4>=X' | wc -l)
+  BASES_COVERED=$(samtools mpileup $BAM_SAMPLE | awk -v X=$MIN_COVERAGE_DEPTH '$4>=X' | wc -l)
 
   # calculate genome coverage
   GENOME_COVERAGE=$(echo "scale=2; $BASES_COVERED / $REF_GENOME_LENGTH" | bc)
