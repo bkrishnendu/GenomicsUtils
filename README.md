@@ -1,10 +1,11 @@
 # GenomicsUtils
 Parse Fastq files and and retrieve the second and fourth line
-from parseFastQ import readFastq
 
-seqs, quals = readFastq('SRR835775_1.first1000.fastq')
+ from parseFastQ import readFastq
 
-print(seqs[:20])
+ seqs, quals = readFastq('SRR835775_1.first1000.fastq')
 
-print(quals[:20])
+ print(seqs[:20])
+
+ print(quals[:20])
 
